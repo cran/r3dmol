@@ -1,0 +1,13 @@
+dependencies:
+  - name: jquery
+    version: 3.5.1
+    src: htmlwidgets/lib/jquery-3.5.1
+    script: jquery.min.js
+  - name: r3dmol
+    version: 1.5.4
+    src: htmlwidgets/lib/3Dmol-1.5.4
+    # script: 3Dmol.js            # Debug
+    # script: 3Dmol.min.js        # Production with jquery
+    # script: 3Dmol-nojquery.js   # Debug without jquery
+    script: 3Dmol-nojquery.min.js # Production without jquery
+    #  stylesheet:

@@ -1,0 +1,124 @@
+---
+title: 'Introduction to r3dmol'
+author: 'Wei Su'
+date: '`r Sys.Date()`'
+output:
+  # md_document:
+  #   pandoc_args: ["--wrap=preserve"]
+  html_document:
+    theme: flatly
+---
+
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{Introduction to r3dmol}
+-->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This is an R package that provides support for [`3Dmol.js`](https://3dmol.csb.pitt.edu/index.html) as a [`htmlwidgets`](https://www.htmlwidgets.org/).
+
+> This package is still very early in its development stages, everything will be changed very often! Please give me a star on Github if you find it useful and I will speed up the development process!
+
+```{r installation, eval=FALSE}
+# install.packages("devtools")
+devtools::install_github('swsoyee/r3dmol')
+```
+
+```{r demo}
+library(r3dmol)
+
+r3dmol(                                             # Set viewer
+  cartoonQuality = 10,
+  lowerZoomLimit = 50,
+  upperZoomLimit = 350,
+  id = "demo",
+  elementId = "demo"
+) %>%
+  m_add_model(data = pdb_6zsl, format = "pdb") %>%  # Add model
+  m_zoom_to() %>%                                   # Zoom to center
+  m_set_style(                                      # Draw cartoon representation of secondary structure
+    style = list(cartoon = list(color = '#00cc96'))) %>%
+  m_set_style(sel = list(ss = 's'),                 # Style beta sheet
+              style = list(cartoon = list(color = '#636efa', arrows = TRUE))) %>%
+  m_set_style(sel = list(ss = 'h'),                 # Style alpha helix
+              style = list(cartoon = list(color = '#ff7f0e'))) %>%
+  m_rotate(angle = 90, axis = 'y') %>%              # Set the initial angle of rotation
+  m_spin()                                          # Spin it!
+```
+
+```{r xyz}
+xyz <- "4
+* (null), Energy   -1000.0000000
+N     0.000005    0.019779   -0.000003   -0.157114    0.000052   -0.012746
+H     0.931955   -0.364989    0.000003    1.507100   -0.601158   -0.004108
+H    -0.465975   -0.364992    0.807088    0.283368    0.257996   -0.583024
+H    -0.465979   -0.364991   -0.807088    0.392764    0.342436    0.764260
+"
+
+r3dmol(width = 400,
+       height = 400,
+       backgroundColor = "0xeeeeee",
+       id = "demo_xyz",
+       elementId = "demo_xyz") %>%
+  m_add_model(data = xyz,
+              format = "xyz",
+              options = list(vibrate = list(frames = 10, amplitude = 1))) %>%
+  m_set_style(style = list(stick = list())) %>%
+  m_animate(list(loop = "backAndForth")) %>%
+  m_zoom_to()
+```
+
+```{r sdf}
+benz <- "
+     RDKit          3D
+
+  6  6  0  0  0  0  0  0  0  0999 V2000
+   -0.9517    0.7811   -0.6622 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.2847    1.3329   -0.3121 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.2365    0.5518    0.3512 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.9517   -0.7811    0.6644 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.2847   -1.3329    0.3144 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.2365   -0.5518   -0.3489 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  2  0
+  2  3  1  0
+  3  4  2  0
+  4  5  1  0
+  5  6  2  0
+  6  1  1  0
+M  END
+$$$$"
+
+r3dmol(id = "demo_sdf", elementId = "demo_sdf") %>%
+  m_add_model(data = benz, format = "sdf") %>%
+  m_set_style(style = list(stick = list())) %>%
+  m_set_style(sel = list(model = 0), style = list(stick = list(colorscheme = "cyanCarbon"))) %>%
+  m_zoom_to()
+```
+
+### Dynamic styles
+
+```{r Dynamic styles}
+r3dmol() %>%
+  m_add_model(data = pdb_1j72) %>%
+  m_set_style(style = list(
+    cartoon = list(
+      colorfunc = "
+        function(atom) {
+          return atom.resi % 2 == 0 ? 'white' : 'green';
+        }"
+    )
+  )) %>%
+  m_zoom_to()
+```
+
+## About `3Dmol.js`
+
+> Nicholas Rego and David Koes
+> 3Dmol.js: molecular visualization with WebGL
+> Bioinformatics (2015) 31 (8): 1322-1324 [doi:10.1093/bioinformatics/btu829](http://doi.org/10.1093/bioinformatics/btu829)
