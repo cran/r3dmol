@@ -20,8 +20,8 @@
 #'   m_zoom_to()
 #' @export
 m_set_style <- function(id,
-                        sel = m_sel(),
-                        style = m_style_cartoon()) {
+                        style = m_style_cartoon(),
+                        sel = m_sel()) {
   if (missing(style)) {
     stop("The `style` argument must be passed.")
   }
@@ -206,15 +206,5 @@ m_set_preceived_distance <- function(id, dist) {
 #' @export
 m_set_view <- function(id, arg, style) {
   method <- "setView"
-  callJS()
-}
-
-#' @rdname m_set_view
-#' @export
-m_set_view_style <- function(id, style) {
-  warning("The m_set_view_style() function is deprecated and replaced by
-          m_add_outline(), and will be removed in future
-          versions of the package.")
-  method <- "setViewStyle"
   callJS()
 }

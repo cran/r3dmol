@@ -19,7 +19,14 @@
 #'   m_zoom_to()
 #' @export
 m_bio3d <- function(pdb) {
-  utils::capture.output(bio3d::write.pdb(pdb = pdb, file = ""))
+  # register temporary file for writing to disk
+  temp <- tempfile()
+  # will delete temp file after funciton completes
+  on.exit(unlink(temp))
+  # write specified pdb to disk as the temp file
+  bio3d::write.pdb(pdb = pdb, file = temp)
+  # read written .pdb for passing to m_add_model*() functions.
+  readLines(temp)
 }
 
 #' Fetch Structure from PDB
@@ -36,11 +43,12 @@ m_bio3d <- function(pdb) {
 #'
 #' @examples
 #' library(r3dmol)
-#'
+#' \dontrun{
 #' r3dmol() %>%
 #'   m_add_model(data = m_fetch_pdb("1bna")) %>%
 #'   m_set_style(style = c(m_style_cartoon(), m_style_stick())) %>%
 #'   m_zoom_to()
+#' }
 #' @export
 m_fetch_pdb <- function(pdb, save.pdb = FALSE, path = NULL) {
   if (!is.character(pdb)) {
@@ -51,15 +59,15 @@ m_fetch_pdb <- function(pdb, save.pdb = FALSE, path = NULL) {
     path <- getwd()
   }
 
-  if (save.pdb == T) {
-    ## Download pdb file and read in file
+  if (save.pdb == TRUE) {
+    # Download pdb file and read in file
     pdb <- bio3d::read.pdb(bio3d::get.pdb(pdb, path = path))
 
-    ## Read PDB file, then write directly to console.
-    utils::capture.output(bio3d::write.pdb(pdb, file = ""))
-  } else if (save.pdb == F) {
+    # Read PDB file, then write directly to console.
+    m_bio3d(pdb)
+  } else if (save.pdb == FALSE) {
 
-    ## Pulls pdb data from online PDB database, without saving to local drive.
+    # Pulls pdb data from online PDB database, without saving to local drive.
     readLines(bio3d::get.pdb(pdb, URLonly = TRUE))
   }
 }

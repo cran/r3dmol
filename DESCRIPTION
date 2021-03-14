@@ -1,15 +1,17 @@
 Package: r3dmol
 Title: Create Interactive 3D Visualizations of Molecular Data
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: 
     c(person(given = "Wei",
            family = "Su",
            role = c("aut", "cre"),
-           email = "swsoyee@gmail.com"),
+           email = "swsoyee@gmail.com",
+           comment = c(ORCID = "0000-0002-9302-5332")),
     person(given = "Brady", 
            family = "Johnston", 
            role = "aut", 
-           email = "brady.johnston@me.com"))
+           email = "brady.johnston@me.com",
+           comment = c(ORCID = "0000-0001-6301-2269")))
 Maintainer: Wei Su <swsoyee@gmail.com>
 Description: Create rich and fully interactive 3D visualizations of molecular data.
     Visualizations can be included in Shiny apps and R markdown documents, or viewed
@@ -27,8 +29,8 @@ Depends: R (>= 2.10)
 URL: https://github.com/swsoyee/r3dmol
 BugReports: https://github.com/swsoyee/r3dmol/issues
 NeedsCompilation: no
-Packaged: 2021-02-07 08:34:51 UTC; suwei
-Author: Wei Su [aut, cre],
-  Brady Johnston [aut]
+Packaged: 2021-03-13 15:36:34 UTC; suwei
+Author: Wei Su [aut, cre] (<https://orcid.org/0000-0002-9302-5332>),
+  Brady Johnston [aut] (<https://orcid.org/0000-0001-6301-2269>)
 Repository: CRAN
-Date/Publication: 2021-02-15 18:10:02 UTC
+Date/Publication: 2021-03-14 15:10:02 UTC

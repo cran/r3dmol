@@ -26,18 +26,38 @@ callJS <- function() {
   }
 }
 
-#' (Internal Use) Cleanup Nulls
+#' Cleanup Nulls
 #'
 #' For the given list, if any of the defined items are NULL, removes it from
 #' the list so it is not passed on to the callJS() function.
 #' @param list A list() object to be cleaned.
-cleanup_nulls <- function(list) {
+#' @noRd
+#' @keywords internal
+.cleanup_nulls <- function(list) {
   for (i in names(list)) {
     if (is.null(list[[i]])) {
       list[[i]] <- NULL
     }
   }
   list
+}
+
+#' Test Length of Inputs
+#'
+#' Compare given argument length to #starts or #stops.
+#' @param option Option to compare the length of.
+#' @param comp What to compare option to.
+#' @noRd
+#' @keywords internal
+.test_length <- function(option, comp) {
+  if (length(option) != length(comp)) {
+    if (length(option) != 1) {
+      stop(paste(
+        deparse(substitute(option)), "options must of length 1 or",
+        "equal to the number of starts & ends."
+      ))
+    }
+  }
 }
 
 #' @importFrom magrittr %>%

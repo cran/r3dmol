@@ -4,7 +4,7 @@
 \alias{m_spin}
 \title{Continuously rotate a scene around the specified axis}
 \usage{
-m_spin(id, axis = "y")
+m_spin(id, axis = "y", speed = 1)
 }
 \arguments{
 \item{id}{R3dmol \code{id} or a \code{r3dmol} object (the output from
@@ -14,6 +14,9 @@ m_spin(id, axis = "y")
 \code{"vy"}, \code{"vz"})
 to rotate around. Default \code{"y"}. View relative (rather than model
 relative) axes are prefixed with \code{"v"}.}
+
+\item{speed}{Speed multiplier for spin animation. Defaults to 1. Negative
+value reverses the direction of spin.}
 }
 \value{
 R3dmol id or a \code{r3dmol} object (the output from \code{r3dmol()})
@@ -23,8 +26,14 @@ Continuously rotate a scene around the specified axis
 }
 \examples{
 library(r3dmol)
-r3dmol() \%>\%
+model <- r3dmol() \%>\%
   m_add_model(data = pdb_6zsl, format = "pdb") \%>\%
-  m_zoom_to() \%>\%
-  m_spin()
+  m_set_style(style = m_style_cartoon(color = "spectrum")) \%>\%
+  m_zoom_to()
+
+# spin the model
+model \%>\% m_spin()
+
+# reverses the direction of spin
+model \%>\% m_spin(speed = -0.5)
 }

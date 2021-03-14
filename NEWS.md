@@ -1,3 +1,24 @@
+# r3dmol 0.1.2
+
+### Features
+
+* Add `m_button()` function to support adding custom features in the viewer, 
+such as switching the style of the model, etc ([#29](https://github.com/swsoyee/r3dmol/pull/29)).
+* Add `m_png()` to support convert widget to png ([#27](https://github.com/swsoyee/r3dmol/pull/27)).
+* Add `m_grid()` to support multiple viewers ([#25](https://github.com/swsoyee/r3dmol/pull/25)).
+* Quickly look at structures with `m_glimpse()`. Initializes the viewer with 
+a range of useful defaults. Allows for quickly visually inspecting the structure
+and further customization of the viewer to speed up setup.
+* Add multiple lines and cylinders in one function call are supported ([#17](https://github.com/swsoyee/r3dmol/pull/17)). Refer to [this article](https://swsoyee.github.io/r3dmol/articles/multi-selections.html) for 
+more information.
+* Add `speed` option for `m_spin()` and option for `keepH` in `m_add_model()` ([#13](https://github.com/swsoyee/r3dmol/pull/13)).
+
+### Others
+
+* Add logo for `{r3dmol}` ([#16](https://github.com/swsoyee/r3dmol/pull/16)).
+* Function `m_set_view_style()` is deprecated and replaced by `m_add_outline()`.
+* Upgrade `3Dmol.js` to the latest version (v1.6.2) ([#12](https://github.com/swsoyee/r3dmol/pull/12)).
+
 # r3dmol 0.1.1
 
 * Introduce new friendly functions for addition of styles, and selection algebra. New functions for adding model from `{bio3d}` and fetching model from [RCSB PDB](https://www.rcsb.org/) ([#6](https://github.com/swsoyee/r3dmol/pull/6)).

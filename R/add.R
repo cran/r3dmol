@@ -33,11 +33,8 @@
 #'   m_zoom_to()
 #' @export
 m_add_style <- function(id,
-                        sel = m_sel(),
-                        style = m_style_cartoon()) {
-  if (missing(style)) {
-    stop("The `style` argument must be passed.")
-  }
+                        style = m_style_cartoon(),
+                        sel = m_sel()) {
   method <- "addStyle"
   callJS()
 }
@@ -81,6 +78,7 @@ m_add_as_one_molecule <- function(id, data, format) {
 #' @param hidden Hide object if TRUE.
 #'
 #' @examples
+#' \dontrun{
 #' r3dmol() %>%
 #'   m_add_model(data = m_fetch_pdb("1bna")) %>%
 #'   m_zoom_to(sel = m_sel(resi = 1)) %>%
@@ -89,6 +87,7 @@ m_add_as_one_molecule <- function(id, data, format) {
 #'     end = m_sel(resi = 3),
 #'     spec = m_shape_spec(color = "green")
 #'   )
+#' }
 #' @export
 m_add_arrow <- function(
                         id,
@@ -143,21 +142,115 @@ m_add_curve <- function(id, spec = list()) {
 #' @param toCap Cap at end of cylinder. 0 for none, 1 for flat, 2 for rounded.
 #' @param dashed Boolean, dashed style cylinder instead of solid.
 #' @param spec Additional shape specifications defined with
+#' @param color Color value for cylinder.
+#' \code{m_shape_spec()}.
+#' @noRd
+#' @keywords internal
+.m_add_cylinder <- function(
+                            id,
+                            start,
+                            end,
+                            radius = 0.1,
+                            fromCap = 1,
+                            toCap = 1,
+                            dashed = FALSE,
+                            color,
+                            hidden,
+                            wireframe,
+                            alpha,
+                            spec = m_shape_spec()) {
+  arglist <- list(
+    start = start,
+    end = end,
+    radius = radius,
+    fromCap = fromCap,
+    toCap = toCap,
+    dashed = dashed,
+    color = color,
+    hidden = hidden,
+    wireframe = wireframe,
+    alpha = alpha
+  )
+
+  spec <- c(arglist, spec)
+
+  method <- "addCylinder"
+  callJS()
+}
+
+#' Add Cylinder Between Points
+#'
+#' Add cynliders between the given points. Will match starting point/s with
+#' ending point/s to create a line between each point. Styling options can be
+#' supplied as one option, or a vector of length equal to the number of lines.
+#' @param id R3dmol \code{id} or a \code{r3dmol} object (the output from
+#' \code{r3dmol()}).
+#' @param start Starting position (or \code{list()} of positions) of line. Can
+#' be a single position or \code{list()} of positions. Format either
+#' \code{m_sel()} or \code{m_vector3()}.
+#' @param end Ending position (or \code{list()} of positions) of line. Can
+#' be a single position or \code{list()} of positions. Format either
+#' \code{m_sel()} or \code{m_vector3()}.
+#' @param radius Radius of cylinder.
+#' @param color Color value for cylinders. Either 1 or vector of colors equal
+#' in length to \code{start}.
+#' @param fromCap Cap at start of cylinder. 0 for none, 1 for flat,
+#' 2 for rounded.
+#' @param toCap Cap at end of cylinder. 0 for none, 1 for flat, 2 for rounded.
+#' @param dashed Boolean, dashed style cylinder instead of solid.
+#' @param hidden Logical, whether or not to hide the cylinder.
+#' @param wireframe Logical, display as wireframe.
+#' @param alpha Alpha value for transparency.
+#' @param spec Additional shape specifications defined with
 #' \code{m_shape_spec()}.
 #' @examples
+#' ## Add a cylinder between residue 1 & 2 of Chain "A"
 #' r3dmol() %>%
-#'   m_add_model(data = m_fetch_pdb("1bna")) %>%
+#'   m_add_model(pdb_6zsl) %>%
 #'   m_zoom_to(sel = m_sel(resi = 1)) %>%
 #'   m_add_cylinder(
-#'     start = m_sel(resi = 1),
-#'     end = m_sel(resi = 2),
+#'     start = m_sel(resi = 1, chain = "A"),
+#'     end = m_sel(resi = 2, chain = "A"),
+#'     dashed = TRUE,
+#'     radius = 0.1
+#'   )
+#'
+#' # Add two cylinders.
+#' # Blue cylinder is between residues 1 & 2
+#' # Green cylinder is between residues 3 & 4
+#' r3dmol() %>%
+#'   m_add_model(pdb_6zsl) %>%
+#'   m_zoom_to(sel = m_sel(resi = 1:4, chain = "A")) %>%
+#'   m_add_cylinder(
+#'     start = list(
+#'       m_sel(resi = 1, chain = "A"),
+#'       m_sel(resi = 3, chain = "A")
+#'     ),
+#'     end = list(
+#'       m_sel(resi = 2, chain = "A"),
+#'       m_sel(resi = 4, chain = "A")
+#'     ),
 #'     dashed = TRUE,
 #'     radius = 0.1,
-#'     spec = m_shape_spec(
-#'       color = "green",
-#'       opacity = 0.5
-#'     )
-#'   )
+#'     color = c("blue", "green")
+#'   ) %>%
+#'   m_add_res_labels(m_sel(resi = 1:4, chain = "A"))
+#'
+#' # The same scene achieved with m_multi_resi_sel()
+#' r3dmol() %>%
+#'   m_add_model(pdb_6zsl) %>%
+#'   m_zoom_to(sel = m_sel(resi = 1:4, chain = "A")) %>%
+#'   m_add_cylinder(
+#'     start = m_multi_resi_sel(resi = c(1, 3), chain = "A"),
+#'     end = list(
+#'       m_sel(resi = 2, chain = "A"),
+#'       m_sel(resi = 4, chain = "A")
+#'     ),
+#'     dashed = TRUE,
+#'     radius = 0.1,
+#'     color = c("blue", "green")
+#'   ) %>%
+#'   m_add_res_labels(m_sel(resi = 1:4, chain = "A"))
 #' @export
 m_add_cylinder <- function(
                            id,
@@ -167,35 +260,137 @@ m_add_cylinder <- function(
                            fromCap = 1,
                            toCap = 1,
                            dashed = FALSE,
+                           color = "black",
+                           alpha = FALSE,
+                           wireframe = FALSE,
+                           hidden = FALSE,
                            spec = m_shape_spec()) {
-  arglist <- list(
-    start = start,
-    end = end,
+  if (methods::is(start)[1] == "AtomSelectionSpec") {
+    start <- list(start)
+  }
+  if (methods::is(end)[1] == "AtomSelectionSpec") {
+    end <- list(end)
+  }
+
+  cylinder_specs <- .m_multi_spec(
+    starts = start,
+    ends = end
+  )
+
+  .test_length(radius, start)
+  .test_length(fromCap, start)
+  .test_length(toCap, start)
+  .test_length(dashed, start)
+  .test_length(color, start)
+  .test_length(hidden, start)
+  .test_length(wireframe, start)
+  .test_length(alpha, start)
+
+  aesthetics <- data.frame(
+    line_num = seq_along(start),
     radius = radius,
     fromCap = fromCap,
     toCap = toCap,
-    dashed = dashed
+    dashed = dashed,
+    color = color,
+    hidden = hidden,
+    wireframe = wireframe,
+    alpha = alpha
   )
 
-  spec <- c(arglist, spec)
+  counter <- 0
+  for (cylinder_spec in cylinder_specs) {
+    counter <- counter + 1
 
-  method <- "addCylinder"
-  callJS()
+    id <- id %>%
+      .m_add_cylinder(
+        start = cylinder_spec$start,
+        end = cylinder_spec$end,
+        radius = aesthetics$radius[counter],
+        fromCap = aesthetics$fromCap[counter],
+        toCap = aesthetics$toCap[counter],
+        dashed = aesthetics$dashed[counter],
+        color = aesthetics$color[counter],
+        hidden = aesthetics$hidden[counter],
+        wireframe = aesthetics$wireframe[counter],
+        alpha = aesthetics$alpha[counter]
+      )
+  }
+  id
 }
 
 #' Add Line Between Points
 #'
-#' Adds a line between the given points.
+#' Add a line between the given points.
 #' @param id R3dmol \code{id} or a \code{r3dmol} object (the output from
-#' \code{r3dmol()})
+#' \code{r3dmol()}).
 #' @param start Start location of line Can be either \code{m_sel()} or
 #' \code{m_vector3()}.
 #' @param end End location of line. Can be either \code{m_sel()} or
 #' \code{m_vector3()}.
 #' @param dashed Boolean, whether or not to draw line as dashed.
+#' @param color Color value for line.
 #' @param spec Additional shape specifications defined with
 #' \code{m_shape_spec()}.
+#'
+#' @return R3dmol \code{id} or a \code{r3dmol} object (the output from
+#' \code{r3dmol()}).
+#' @noRd
+#' @keywords internal
+.m_add_line <- function(
+                        id,
+                        start,
+                        end,
+                        dashed,
+                        color,
+                        opacity,
+                        hidden) {
+  # ensure that the arguments are correct
+  if (is.null(dashed)) {
+    dashed <- FALSE
+  }
+
+  spec <- list(
+    start = start,
+    end = end,
+    dashed = dashed,
+    color = color,
+    opacity = opacity,
+    hidden = hidden
+  ) %>% .cleanup_nulls()
+
+  method <- "addLine"
+  callJS()
+}
+
+#' Add Lines Between Points
+#'
+#' Add lines between the given points. Will match starting point/s with ending
+#' point/s to create a line between each point. Styling options can be supplied
+#' as one option, or a vector of length equal to the number of lines.
+#' @param id R3dmol \code{id} or a \code{r3dmol} object (the output from
+#' \code{r3dmol()}).
+#' @param start Starting position (or \code{list()} of positions) of line. Can
+#' be a single position or \code{list()} of positions. Format either
+#' \code{m_sel()} or \code{m_vector3()}.
+#' @param end Ending position (or \code{list()} of positions) of line. Can
+#' be a single position or \code{list()} of positions. Format either
+#' \code{m_sel()} or \code{m_vector3()}.
+#' @param dashed Logical whether the lines are dashed.
+#' @param color Either single or list of color values equal to number of lines.
+#' @param opacity Either single or list of opacity values equal to number of
+#' lines.
+#' @param hidden Either single or list of hidden values equal to number of
+#' lines.
+#'
+#' @return R3dmol \code{id} or a \code{r3dmol} object (the output from
+#' \code{r3dmol()})
+#'
+#' @export
+#'
 #' @examples
+#' library(r3dmol)
+#'
 #' r3dmol() %>%
 #'   m_add_model(data = pdb_6zsl) %>%
 #'   m_set_style(style = m_style_cartoon()) %>%
@@ -208,36 +403,73 @@ m_add_cylinder <- function(
 #'     )
 #'   ) %>%
 #'   m_add_line(
-#'     start = m_sel(
-#'       resi = 1:10,
-#'       chain = "A"
+#'     start = list(
+#'       m_sel(resi = 1, chain = "A"),
+#'       m_sel(resi = 1, chain = "A")
 #'     ),
-#'     end = m_sel(
-#'       resi = 1:10,
-#'       chain = "B"
-#'     )
-#'   ) %>%
-#'   m_add_label(
-#'     text = "The middle of the selection",
-#'     sel = m_sel(resi = 1:10)
+#'     end = list(
+#'       m_sel(resi = 10, chain = "A"),
+#'       m_sel(resi = 10, chain = "B")
+#'     ),
+#'     dashed = TRUE
 #'   )
-#' @export
 m_add_line <- function(
                        id,
                        start,
                        end,
-                       dashed = FALSE,
-                       spec = m_shape_spec()) {
-  line_list <- list(
-    start = start,
-    end = end,
-    dashed = dashed
+                       dashed = TRUE,
+                       color = "black",
+                       opacity = 1,
+                       hidden = FALSE) {
+  if (missing(start) | missing(end)) {
+    stop("At least 1 `start` and 1 `end` must be passed in.")
+  }
+
+  if (methods::is(start)[1] == "AtomSelectionSpec") {
+    start <- list(start)
+  }
+  if (methods::is(end)[1] == "AtomSelectionSpec") {
+    end <- list(end)
+  }
+
+  if (length(start) != length(end)) {
+    stop("length of `start` must be equal to length of `end`.")
+  }
+
+  line_specs <- .m_multi_spec(
+    starts = start,
+    ends = end
   )
 
-  spec <- c(spec, line_list)
+  .test_length(dashed, start)
+  .test_length(color, start)
+  .test_length(opacity, start)
+  .test_length(hidden, start)
 
-  method <- "addLine"
-  callJS()
+  aesthetics <- data.frame(
+    line_num = seq_along(start),
+    dashed = dashed,
+    color = color,
+    opacity = opacity,
+    hidden = hidden
+  )
+
+  counter <- 0
+
+  for (line_spec in line_specs) {
+    counter <- counter + 1
+
+    id <- id %>%
+      .m_add_line(
+        start = line_spec$start,
+        end = line_spec$end,
+        dashed = aesthetics$dashed[counter],
+        color = aesthetics$color[counter],
+        opacity = aesthetics$opacity[counter],
+        hidden = aesthetics$hidden[counter]
+      )
+  }
+  id
 }
 
 #' Add Sphere Shape
@@ -334,8 +566,7 @@ m_add_shape <- function(id, shapeSpec = list()) {
 #' @param style Label style specification
 #' @param sel Set position of label to center of this selection
 #' @param noshow if \code{TRUE}, do not immediately display label - when adding
-#' multiple
-#' labels this is more efficient
+#' multiple labels this is more efficient
 #'
 #' @return R3dmol \code{id} or a \code{r3dmol} object (the output from
 #' \code{r3dmol()})
@@ -374,7 +605,8 @@ m_add_model <-
   function(id,
            data,
            format = c("pdb", "sdf", "xyz", "pqr", "mol2", "cif"),
-           options) {
+           keepH = FALSE,
+           options = list()) {
     format <- match.arg(format)
 
     if (!is.list(data)) {
@@ -394,6 +626,8 @@ m_add_model <-
     }
 
     rm(entries, entry)
+
+    options <- c(options, list(keepH = keepH))
 
     method <- "addModel"
     callJS()
